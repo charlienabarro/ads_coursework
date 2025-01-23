@@ -82,7 +82,7 @@ def smart_cat(linked_list_a, linked_list_b):
     if linked_list_b.head is None:
         return linked_list_a
 
-    linked_list_a.next = linked_list_b.head
+    linked_list_a.tail.next = linked_list_b.head
     linked_list_a.tail = linked_list_b.tail
     linked_list_a.size += linked_list_b.size
     return linked_list_a
@@ -115,15 +115,14 @@ def enqueue(ll_queue, value):
     Returns a LinkedListWithTail containing the contents of a queue held in the
     LinkedListWithTail ll_queue, after a new value has been enqueued.
     """
+    new_node = Node(value)
     if ll_queue.head is None:
-        ll_queue.head = Node(value)
-        ll_queue.tail = Node(value)
-        ll_queue.size = 1
+        ll_queue.head = ll_queue.tail = new_node
     else:
+        ll_queue.tail.next = new_node
+        ll_queue.tail = new_node
+    ll_queue.size += 1
 
-        ll_queue.tail.next = Node(value)
-        ll_queue.tail = Node(value)
-        ll_queue.size += 1
     return ll_queue
 
 

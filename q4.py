@@ -1,81 +1,79 @@
-
-import random
-
-
 def all_orderings(k):
     """
     Generates all Boldon House orderings of size k using backtracking.
     """
     all_orders = []
-    count=0
-    mod_list = []
-    def backtracking(current,j,i,mod_list,repeat_num):
+
+    # Helper function for backtracking
+    def backtrack(current, mod_list):
+        # If the order is complete, check if differences are monotone increasing
         if len(current) == k:
-            return current
+            # Check if mods (pairwise differences) are monotone increasing
+            is_monotone = True
+            for i in range(1, len(mod_list)):
+                if mod_list[i] < mod_list[i-1]:
+                    is_monotone = False
+                    break
+            if is_monotone:
+                all_orders.append(current[:])  # Add a valid ordering
+            return
 
-        elif len(current) == 0:
-            current.append(j)
-            backtracking(current,j,i,mod_list,repeat_num)
+        # Try adding each number from 0 to k-1 that hasn't been used
+        for num in range(k):
+            if num not in current:
+                # Calculate the pairwise difference modulo k
+                if len(current) > 0:
+                    diff = (num - current[-1]) % k
+                    new_mod_list = mod_list + [diff]
+                else:
+                    new_mod_list = mod_list  # No difference for the first number
 
-        elif len(mod_list) == 0:
-            mod_list.append((j - current[-1]) % k)
-            backtracking(current, j, i, mod_list, repeat_num)
+                # Only check monotonicity if new_mod_list has more than one element
+                if len(new_mod_list) < 2 or new_mod_list[-1] >= new_mod_list[-2]:
+                    current.append(num)
+                    backtrack(current, new_mod_list)
+                    current.pop()  # Backtrack by removing the last element
 
-        elif (j - current[-1])%6 >= mod_list[-1]:
-            mod_list.append((j - current[-1])%6)
-            repeat_num = 0
-            return current.append(j)
-        elif j>12:
-            repeat_num +=1
-            for z in range(len(current)):
-                try:
-                    backtracking(current[:-z],current[-z]+1,i,mod_list,repeat_num)
-                except:
-                    ...
-
-        else:
-            backtracking(current,j+1,i,mod_list)
-
-
-
-    for i in range(k):
-        current = []
-        j=0
-        backtracking(current, j, i, mod_list,0)
-
+    # Start the backtracking process
+    backtrack([], [])
+    return all_orders
 
 
 def ordering(k):
     """
     Returns a Boldon House ordering of size k.
     """
-    bolden = False
-    while not bolden:
-        # Generate a list of numbers from 0 to k-1
-        order = [i for i in range(k)]
+    result = []
+    def backtrack(current, mod_list):
 
-        # Shuffle the list manually by swapping elements
-        random.shuffle(order)
-        mod_list = []
-        # Calculate the pairwise differences modulo k
-        for i in range(1, k):
-            value = (order[i] - order[i - 1]) % k
-            mod_list.append(value)
+        if len(current) == k:
+            is_monotone = True
+            for i in range(1, len(mod_list)):
+                if mod_list[i] < mod_list[i - 1]:
+                    is_monotone = False
+                    break
+            if is_monotone:
+                result.append(current[:])
+            return
 
-        correct = True
-        # Check if the differences are monotone increasing
-        for i in range(1,len(mod_list)-1):
-            if mod_list[i+1] < mod_list[i]:
-                correct = False
-        if correct:
-            bolden = True
+        for num in range(k):
+            if num not in current:
+                if len(current) > 0:
+                    diff = (num - current[-1]) % k
+                    new_mod_list = mod_list + [diff]
+                else:
+                    new_mod_list = mod_list
 
-    return order
+                if len(new_mod_list) < 2 or new_mod_list[-1] >= new_mod_list[-2]:
+                    current.append(num)
+                    backtrack(current, new_mod_list)
+                    if result:
+                        return
+                    current.pop()
 
+    backtrack([], [])
 
-print(all_orderings(12))
+    return result[0] if result else []
 
-# simple test for all_orderings(k) only
-# you do not have to return the Boldon House orderings in exactly the same order as they appear in this test case
-'''assert(set(tuple(o) for o in all_orderings(3)) ==
-       set(tuple(o) for o in [[0, 2, 1], [0, 1, 2], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]))'''
+assert(set(tuple(o) for o in all_orderings(3)) ==
+       set(tuple(o) for o in [[0, 2, 1], [0, 1, 2], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]))

@@ -56,6 +56,8 @@ def hash_quadratic(d):
                     ht.add(new_pos, element)
                     solved= True
                 count += 1
+            if count == 17:
+                raise Exception('Table is full')
     return ht
 
 
@@ -77,11 +79,15 @@ def hash_double(d):
             ht.add(pos, element)
         else:
             step = 13 - (element % 13)
+            count = 0
             while True:
                 pos = (pos + step) % 17
                 if ht.lookup(pos) == '-':
                     ht.add(pos, element)
                     break
+                count +=1
+            if count == 17:
+                raise Exception('Table is full')
     return ht
 
 
@@ -97,3 +103,8 @@ assert (hash_double([1, 2, 3, 4]).check([4, '-', '-', '-', '-', '-', '-', '-', 1
 assert (hash_double([5]).check(['-', '-', '-', 5, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']))
 assert (hash_double([22]).check(['-', '-', '-', 22, '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']))
 assert (hash_double([5, 22, 39]).check(['-', '-', '-', 5, '-', '-', '-', 22, '-', '-', '-', '-', '-', '-', '-', '-', 39]))
+
+# Test: Handling of full table (17 elements)
+keys = [i for i in range(1, 18)]
+assert hash_quadratic(keys).check([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
+assert hash_double(keys).check([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])

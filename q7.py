@@ -6,19 +6,9 @@ def SelectPivotPair(L):
     and let P0 be the second smallest and P1 the
     second largest of those 5 elements.
     """
-    copy_l = L.copy()
-    numbers= []
-    for z in range(5):
-        i = random.randint(0,len(copy_l)-1)
-        numbers.append(copy_l[i])
-        copy_l.pop(i)
-
-    numbers = sorted(numbers)
-    P0=numbers[1]
-    P1=numbers[-2]
-    return P0,P1
-
-
+    numbers = random.sample(L, 5)
+    numbers.sort()
+    return numbers[1], numbers[-2]
 
 
 
